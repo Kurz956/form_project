@@ -2,13 +2,58 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from  .forms import FeedbackForm
 from .models import Feedback
+from django.urls import reverse_lazy
 
 from django.views import View
 from django.views.generic.base import TemplateView
 from django.views.generic import ListView, DetailView
+from django.views.generic.edit import FormView, CreateView, UpdateView, DeleteView
 # Create your views here.
 
-class FeedBackView(View):
+class FeedBackDeleteView(DeleteView):
+    model = Feedback
+    success_url = '/list' #reverse_lazy('feedback:feedback-list')
+class FeedBackViewUpdate(UpdateView):
+    '''Получение информации'''
+    model = Feedback
+    form_class = FeedbackForm
+    template_name = 'feedback/feedback.html'
+    success_url = '/done'
+class FeedBackViewUpdate_Fields(UpdateView):
+    '''Ошибок не будет, тк здесь мы давать возможность изменять уже определенные поля в уже сделанных записях'''
+    model = Feedback
+    fields = ['name']
+    template_name = 'feedback/feedback.html'
+    success_url = '/done'
+class FeedBackView(CreateView): # через form_class, более предпочтительная реализация
+    '''Получение информации'''
+    model = Feedback
+    form_class = FeedbackForm
+    template_name = 'feedback/feedback.html'
+    success_url = '/done'
+class FeedBackView_Fields(CreateView): # через fields, при этом нельзя переименовывать поля
+    '''Подсмотрел в другом месте, что имена можно настраивать в самой модели при помощи  verbose_name=
+    Тогда и в форму придут уже "настроенные" имена и в forms.py  их можно не переопределять
+    Например,
+    surname = models.CharField(max_length=60, verbose_name='Фамилия')
+    При этом  в админке также  будут использованы "настроенные" имена.'''
+    model = Feedback
+    fields = ['name', 'surname', 'rating']  # указываем, что хотим видеть в форме, !обращаем внимание!, что незаполненые поля могут дать ошибку в создании записи в таблицу
+    fields = ['__all__'] # или так
+    template_name = 'feedback/feedback.html'
+    success_url = '/done'
+
+class FeedBackView_OLD(FormView):
+    '''Получение информации'''
+    form_class = FeedbackForm
+    template_name = 'feedback/feedback.html'
+    success_url = '/done'
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+
+class FeedBackView_OLD_OLD(View):
     '''Получение информации'''
     def get(self, request):
         form = FeedbackForm()
@@ -61,7 +106,7 @@ class ListFeedBack(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        filter_qs = queryset.filter(rating__gt=2)
+        filter_qs = queryset.filter(rating__gt=0)
         return filter_qs
 
 class DetailFeedBack(DetailView): # через DetailView

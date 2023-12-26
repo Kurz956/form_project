@@ -8,11 +8,34 @@
 
 
 {% block content %}
-    <h2>Список отзывов</h2>
-    <ol>
-        {% for feed in feedbacks %}
-        <li>  {{feed.name}} - {{feed.surname}}: {{feed.rating}}</li>
-            {{feed.feedback}}
-        {% endfor %}
-    </ol>
+    <table>
+        <h2>Список отзывов</h2>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Имя</th>
+            <th>Фамилия</th>
+            <th>Рейтинг</th>
+            <th>Отзыв</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for feed in feedbacks %}
+            <tr>
+                <td>{{ feed.pk }}</td>
+                <td>{{feed.name}}</td>
+                <td>{{feed.surname}}</td>
+                <td>{{feed.rating}}</td>
+                <td>{{feed.feedback}}</td>
+                <td><a href="{% url 'update-feedback' feed.pk %}">Изменить</a></td>
+                <td>
+                    <form method="post" action="{% url 'delete-feedback'  feed.pk %}">
+                        {% csrf_token %}
+                        <input type="submit" value="Удалить">
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}
