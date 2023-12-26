@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}
+    Страница {detailed_feedback.id} отзыва
+{% endblock %}
+
+
+{% block content %}
+
+
+    <div>
+        Рейтинг:<p></p>
+        {{object.rating}}<hr>
+        Отзыв:<p></p>
+        {{feedback.feedback}}<hr>
+        Оставил:
+        <p></p>
+        <b>Имя:</b> {{feedback.name}} <b>Фамилия:</b>{{object.surname}} <b>Id:</b>{{feedback.id}}<hr>
+
+    </div>
+
+
+{% endblock %}

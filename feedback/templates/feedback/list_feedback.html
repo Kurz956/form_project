@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}
+    Страница ВСЕХ отзывов
+{% endblock %}
+
+
+{% block content %}
+    <h2>Список отзывов</h2>
+    <ol>
+        {% for feed in feedbacks %}
+        <li>  {{feed.name}} - {{feed.surname}}: {{feed.rating}}</li>
+            {{feed.feedback}}
+        {% endfor %}
+    </ol>
+{% endblock %}
